@@ -82,7 +82,7 @@ size_t bitset<N>::count() const {
 template<size_t N>
 bitset<N>& bitset<N>::flip() {
     for (int i = 0; i < _size; i++) {
-        bits[i] = ~(bits[i]);
+        bits[i] ~= bits[i];
     }
     return *this;
 }
@@ -139,32 +139,54 @@ bitset<N>& bitset<N>::reset(size_t pos) {
 
 template<size_t N>
 bool bitset<N>::operator!=(const bitset<N>& right) const {
-    // Implementation for operator!=
+    for (int i = 0; i < N; i++) {
+        if (this->test(i) == right.test(i)) {
+            return false;
+        }
+    }
+    return true;
 }
 
 template<size_t N>
 bool bitset<N>::operator==(const bitset<N>& right) const {
-    // Implementation for operator==
+    for (int i = 0; i < N; i++) {
+        if (bits[i] == right.bits[i]) {
+            return false;
+        }
+    }
+    return true;
 }
 
 template<size_t N>
 bitset<N>& bitset<N>::operator&=(const bitset<N>& right) {
-    // Implementation for operator&=
+    for (size_t i = 0; i < NumWords; ++i) {
+        bits[i] &= right.bits[i];
+    }
+    return *this;
 }
 
 template<size_t N>
 bitset<N>& bitset<N>::operator|=(const bitset<N>& right) {
-    // Implementation for operator|=
+    for (size_t i = 0; i < NumWords; ++i) {
+        bits[i] |= right.bits[i];
+    }
+    return *this;
 }
 
 template<size_t N>
 bitset<N>& bitset<N>::operator^=(const bitset<N>& right) {
-    // Implementation for operator^=
+    for (size_t i = 0; i < NumWords; ++i) {
+        bits[i] ^= right.bits[i];
+    }
+    return *this;
 }
 
 template<size_t N>
 bitset<N> bitset<N>::operator~() const {
-    // Implementation for operator~
+    for (size_t i = 0; i < NumWords; ++i) {
+        bits[i] ~= bits[i];
+    }
+    return *this;
 }
 
 template<size_t N>
@@ -189,5 +211,5 @@ bitset<N>& bitset<N>::operator>>=(size_t pos) {
 
 template<size_t N>
 bool bitset<N>::operator[](size_t pos) const {
-    // Implementation for operator[]
+    return test(pos);
 }
