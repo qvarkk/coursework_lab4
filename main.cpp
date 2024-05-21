@@ -1,27 +1,12 @@
-#include <iostream>
 #include "bitset.h"
+#include <iostream>
+#include <string>
+#include <bitset>
 
 int main() {
-    bitset<32> bt;
+    std::bitset<9> bitset;
 
-    bt.set(4);
-    bt.set(8);
-    bt.set(12);
-    bt.set(16);
-    bt.set(24);
-    bt.set(28);
-
-    bt.print();
-
-    return 0;
-}
-
-template<size_t N>
-void bitset<N>::print() const {
-    for (size_t i = 0; i < N; i++) {
-        std::cout << test(i);
-    }
-    std::cout << std::endl;
+    
 }
 
 template<size_t N>
@@ -82,7 +67,7 @@ size_t bitset<N>::count() const {
 template<size_t N>
 bitset<N>& bitset<N>::flip() {
     for (int i = 0; i < _size; i++) {
-        bits[i] ~= bits[i];
+        bits[i] = ~bits[i];
     }
     return *this;
 }
@@ -94,7 +79,8 @@ bitset<N>& bitset<N>::flip(size_t pos) {
 
     if (test(pos)) {
         reset(pos);
-    } else {
+    }
+    else {
         set(pos);
     }
 }
@@ -114,7 +100,8 @@ bitset<N>& bitset<N>::set(size_t pos, bool val) {
 
     if (val) {
         bits[pos / bitsPerWord] |= (1u << (pos % bitsPerWord));
-    } else {
+    }
+    else {
         bits[pos / bitsPerWord] &= ~(1u << (pos % bitsPerWord));
     }
     return *this;
@@ -135,6 +122,51 @@ bitset<N>& bitset<N>::reset(size_t pos) {
 
     bits[pos / bitsPerWord] &= ~(1u << (pos % bitsPerWord));
     return *this;
+}
+
+template<size_t N>
+std::string bitset<N>::to_string(char zero, char one) {
+    if (zero == one) {
+        throw std::invalid_argument("zero and one characters must be different");
+    }
+
+    std::string result;
+    result.reserve(N);
+    for (size_t i = N; i > 0; i--) {
+        result.push_back(test(i - 1) ? one : zero);
+    }
+
+    return result;
+}
+
+template<size_t N>
+unsigned long long bitset<N>::to_ullong() const {
+    if (N > sizeof(unsigned long long) * 8) {
+        throw std::overflow_error("bitset size exceeds the size of unsigned long long");
+    }
+
+    unsigned long long result = 0;
+    for (size_t i = 0; i < N; ++i) {
+        if (test(i)) {
+            result |= (1ull << i);
+        }
+    }
+    return result;
+}
+
+template<size_t N>
+unsigned long bitset<N>::to_ulong() const {
+    if (N > sizeof(unsigned long) * 8) {
+        throw std::overflow_error("bitset size exceeds the size of unsigned long long");
+    }
+
+    unsigned long result = 0;
+    for (size_t i = 0; i < N; ++i) {
+        if (test(i)) {
+            result |= (1ul << i);
+        }
+    }
+    return result;
 }
 
 template<size_t N>
@@ -159,7 +191,7 @@ bool bitset<N>::operator==(const bitset<N>& right) const {
 
 template<size_t N>
 bitset<N>& bitset<N>::operator&=(const bitset<N>& right) {
-    for (size_t i = 0; i < NumWords; ++i) {
+    for (size_t i = 0; i < bitsPerWord; ++i) {
         bits[i] &= right.bits[i];
     }
     return *this;
@@ -167,7 +199,7 @@ bitset<N>& bitset<N>::operator&=(const bitset<N>& right) {
 
 template<size_t N>
 bitset<N>& bitset<N>::operator|=(const bitset<N>& right) {
-    for (size_t i = 0; i < NumWords; ++i) {
+    for (size_t i = 0; i < bitsPerWord; ++i) {
         bits[i] |= right.bits[i];
     }
     return *this;
@@ -175,7 +207,7 @@ bitset<N>& bitset<N>::operator|=(const bitset<N>& right) {
 
 template<size_t N>
 bitset<N>& bitset<N>::operator^=(const bitset<N>& right) {
-    for (size_t i = 0; i < NumWords; ++i) {
+    for (size_t i = 0; i < bitsPerWord; ++i) {
         bits[i] ^= right.bits[i];
     }
     return *this;
@@ -183,8 +215,8 @@ bitset<N>& bitset<N>::operator^=(const bitset<N>& right) {
 
 template<size_t N>
 bitset<N> bitset<N>::operator~() const {
-    for (size_t i = 0; i < NumWords; ++i) {
-        bits[i] ~= bits[i];
+    for (size_t i = 0; i < bitsPerWord; ++i) {
+        bits[i] = ~bits[i];
     }
     return *this;
 }
@@ -213,3 +245,5 @@ template<size_t N>
 bool bitset<N>::operator[](size_t pos) const {
     return test(pos);
 }
+
+

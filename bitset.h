@@ -1,5 +1,6 @@
-#ifndef BITSET_H
-#define BITSET_H
+#pragma once
+
+#include <string>
 
 template<size_t N>
 class bitset {
@@ -9,9 +10,6 @@ private:
 	unsigned int bits[_size] = { 0 };
 public:
 	bitset() {};
-
-	// Print every bit
-	void print() const;
 
 	// Check if all bits in a bitset are set to 1.
 	bool all() const;
@@ -39,6 +37,13 @@ public:
 	bitset<N>& reset();
 	bitset<N>& reset(size_t pos);
 
+	// Convert bitset to string
+	std::string to_string(char zero = '0', char one = '1');
+	// Convert bitset to ullong
+	unsigned long long to_ullong() const;
+	// Convert bitset to ulong
+	unsigned long to_ulong() const;
+
 	bool operator != (const bitset<N>& right) const;
 	bool operator==(const bitset<N>& right) const;
 
@@ -56,5 +61,3 @@ public:
 	
 	bool operator[](size_t pos) const;
 };
-
-#endif
