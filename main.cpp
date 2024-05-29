@@ -1,12 +1,14 @@
-#include "bitset.h"
+#include "bitset.hpp"
 #include <iostream>
 #include <string>
 #include <bitset>
 
 int main() {
-    std::bitset<9> bitset;
+    std::bitset<33> bitset;
 
-    
+    bitset.set();
+
+    std::cout << bitset.to_string() << std::endl;
 }
 
 template<size_t N>
@@ -223,27 +225,51 @@ bitset<N> bitset<N>::operator~() const {
 
 template<size_t N>
 bitset<N> bitset<N>::operator<<(size_t pos) const {
-    // Implementation for operator<<
+    bitset<N> result;
+    if (pos >= N) return result;
+
+    size_t wordShift = pos / bitsPerWord;
+    size_t bitShift = pos % bitsPerWord;
+
+    for (size_t i = _size; i > wordShift; i--) {
+        result.bits[i - 1] = bits[i - 1 - wordShift] << bitShift;
+        if (i > wordShift + 1 && bitShift > 0) {
+            result.bits[i - 1] |= bits[i - 2 - wordShift] >> (bitsPerWord - bitShift);
+        }
+    }
+    return result;
 }
 
 template<size_t N>
 bitset<N> bitset<N>::operator>>(size_t pos) const {
-    // Implementation for operator>>
+    bitset<N> result;
+    if (pos >= N) return result;
+
+    size_t wordShift = pos / bitsPerWord;
+    size_t bitShift = pos % bitsPerWord;
+
+    for (size_t i = 0; i < _size - wordShift; ++i) {
+        result.bits[i] = bits[i + wordShift] >> bitShift;
+        if (i + wordShift + 1 < _size && bitShift > 0) {
+            result.bits[i] |= bits[i + wordShift + 1] << (bitsPerWord - bitShift);
+        }
+    }
+    return result;
 }
 
 template<size_t N>
 bitset<N>& bitset<N>::operator<<=(size_t pos) {
-    // Implementation for operator<<=
+    *this = *this << pos;
+    return *this;
 }
 
 template<size_t N>
 bitset<N>& bitset<N>::operator>>=(size_t pos) {
-    // Implementation for operator>>=
+    *this = *this >> pos;
+    return *this;
 }
 
 template<size_t N>
 bool bitset<N>::operator[](size_t pos) const {
     return test(pos);
 }
-
-

@@ -53,7 +53,7 @@ public:
 
 	bitset<N> operator~() const;
 
-	bitset<N> operator << (size_t pos) const;
+	bitset<N> operator<<(size_t pos) const;
 	bitset<N> operator>>(size_t pos) const;
 
 	bitset<N>& operator<<=(size_t pos);
